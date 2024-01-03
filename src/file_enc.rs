@@ -7,9 +7,6 @@ use std::path::Path;
 const NONCE_SIZE: usize = 12;
 
 /// TODO: Go in blocks
-/// TODO: HMAC Message Authentication
-/// TODO: Format Files: Initialization Vector | Encrypted Text | HMAC
-
 
 pub fn encrypt_file(input_file: &Path, output_file: &Path, key: &Key<Aes256Gcm>) {
     let mut file_in = File::open(input_file).expect("Failed to open input file");
@@ -38,7 +35,7 @@ pub fn decrypt_file(input_file: &Path, output_file: &Path, key: &Key<Aes256Gcm>)
     let nonce = Nonce::from_slice(&file_bytes[0..NONCE_SIZE]);
     let mut encryptor = Aes256Gcm::new(&key);
 
-    let denc_bytes = encryptor.encrypt(&nonce,&file_bytes[NONCE_SIZE..]).expect("Could not encrypt file");
+    let denc_bytes = encryptor.decrypt(&nonce,&file_bytes[NONCE_SIZE..]).expect("Could not encrypt file");
 
     file_out.write(&denc_bytes).expect("Could not write enc bytes");
 

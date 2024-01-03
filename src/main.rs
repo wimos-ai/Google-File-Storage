@@ -1,5 +1,6 @@
 mod file_enc;
 
+
 use std::path::Path;
 use std::fs::File;
 use std::io::{BufReader, Read};
@@ -34,14 +35,14 @@ fn is_same_file(file1: &Path, file2: &Path) -> Result<bool, std::io::Error> {
 
 fn main() {
     let k = Key::<Aes256Gcm>::from_slice("12345678901234567890123456789012".as_bytes());
-    let input_file = Path::new("C:\\Users\\willm\\Desktop\\tmp.txt");
-    assert!(is_same_file(input_file, input_file).unwrap());
 
-    let enc_file = Path::new("C:\\Users\\willm\\Desktop\\tmp.txt.enc");
-    let d_enc_file = Path::new("C:\\Users\\willm\\Desktop\\tmp.denc.txt");
+    let input_file = Path::new("C:\\Users\\willm\\RustroverProjects\\Google-File-Storage\\tmp.bin");
+    let enc_file = Path::new("C:\\Users\\willm\\RustroverProjects\\Google-File-Storage\\tmp.bin.enc");
+    let d_enc_file = Path::new("C:\\Users\\willm\\RustroverProjects\\Google-File-Storage\\tmp.denc.bin");
+
     file_enc::encrypt_file(input_file, enc_file, &k);
     file_enc::decrypt_file(enc_file, d_enc_file, &k);
-    print!("Hello World");
+
     assert!(is_same_file(input_file, d_enc_file).unwrap(), "Files Were not the same :(");
 }
 

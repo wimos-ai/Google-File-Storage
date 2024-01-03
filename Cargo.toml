@@ -8,5 +8,3 @@ edition = "2021"
 [dependencies]
 aes-gcm = "0.10.3"
 google-drive3 = "5.0.3"
-sha2 = "0.10"
-hmac = "0.12.1"
