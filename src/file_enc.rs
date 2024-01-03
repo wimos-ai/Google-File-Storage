@@ -7,11 +7,10 @@ use std::path::{Path};
 const NONCE_SIZE: usize = 12;
 
 /// TODO: Go in blocks
-
 #[derive(Debug)]
-pub enum FileEncError{
+pub enum FileEncError {
     IOError(std::io::Error),
-    EncryptionError(aes_gcm::Error)
+    EncryptionError(aes_gcm::Error),
 }
 
 impl From<std::io::Error> for FileEncError {
@@ -27,26 +26,26 @@ impl From<aes_gcm::Error> for FileEncError {
 }
 
 
-
 pub fn encrypt_file(input_file: &Path, output_file: &Path, key: &Key<Aes256Gcm>) -> Result<(), FileEncError> {
-    let file_in = File::open(input_file)?;
+    let mut file_in = File::open(input_file)?;
 
     let mut file_out = File::create(output_file)?;
 
     let nonce = Aes256Gcm::generate_nonce(&mut OsRng); // 96-bits; unique per message
     let encryptor = Aes256Gcm::new(&key);
 
-    let file_bytes = vec![0; file_in.metadata()?.len() as usize];
+    let mut file_bytes = vec![0; file_in.metadata()?.len() as usize];
+    file_in.read_exact(file_bytes.as_mut_slice())?;
+
 
     let enc_bytes = encryptor.encrypt(&nonce, file_bytes.as_ref())?;
 
-    file_out.write(&nonce).expect("Could not write Nonce");
-    file_out.write(&enc_bytes).expect("Could not write enc bytes");
-
+    file_out.write(&nonce)?;
+    file_out.write(&enc_bytes)?;
     Ok(())
 }
 
-pub fn decrypt_file(input_file: &Path, output_file: &Path, key: &Key<Aes256Gcm>) -> Result<(), FileEncError>{
+pub fn decrypt_file(input_file: &Path, output_file: &Path, key: &Key<Aes256Gcm>) -> Result<(), FileEncError> {
     let mut file_in = File::open(input_file)?;
     let mut file_out = File::create(output_file)?;
 
